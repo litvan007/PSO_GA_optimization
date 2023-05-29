@@ -67,6 +67,7 @@ class Common():
 
         # Основной цикл алгоритма оптимизации
         iteration = 0 # номер итерации алгоритма
+        position_history = []
         while iteration < self.MAX_ITERATION:
             # Обновляем скорость, положение и значение функции для каждой частицы в рое
             fig = plt.figure(figsize=(10, 10))
@@ -79,21 +80,23 @@ class Common():
             ax.set_xlim(-5, 5)
             ax.set_ylim(-5, 5)
             ax.set_zlim(0, 100)
+
+            temp_history = []
             for particle in self.swarm:
-                curr_particle_position = particle.position
+                curr_particle_position = particle.position.copy()
+                temp_history.append(curr_particle_position)
                 func = particle.func
                 ax.plot(curr_particle_position[0], curr_particle_position[1], func(curr_particle_position), 'r.')
 
                 particle.update_velocity(best_swarm_position)
                 particle.update_position()
                 particle.update_fitness()
-                # Если значение функции для текущей частицы лучше, чем лучшее значение в рое,
-                # то обновляем лучшее значение в рое текущим значением функции и положением частицы 
 
                 if particle.fitness < best_swarm_fitness:
                     best_swarm_position = particle.position.copy()
                     best_swarm_fitness = particle.fitness
             
+            position_history.append(temp_history)
             plt.savefig(f"algorithms/temp_pics_iteration/{iteration}.png")
             plt.close()
             iteration += 1 # увеличиваем номер итерации
@@ -101,17 +104,8 @@ class Common():
         # Выводим результат оптимизации на экран
         print("Лучшее решение: ", best_swarm_position)
         print("Значение функции в лучшем решении: ", best_swarm_fitness)
-        return best_swarm_position[0], best_swarm_position[1], best_swarm_fitness
 
-    # def drawPaht(self, best_swarm_x, best_swarm_y, best_swarm_fitness):
-    #     images = [Image.open(f"algorithms/temp_pics_iteration/{n}.png") for n in range(self.MAX_ITERATION)]
-    #     images[0].save('PSO_animation.gif', save_all=True, append_images=images[1:], duration=100, loop=0)
-    #     fig = plt.figure()
-    #     ax = fig.add_subplot(111, projection='3d')
-    #     plt.title("PSO")
-    #     ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, color='b', )
-    #     ax.set_xlabel('x label', color='r')
-    #     ax.set_ylabel('y label', color='g')
-    #     ax.set_zlabel('z label', color='b')
-    #     ax.plot(best_swarm_x, best_swarm_y, best_swarm_fitness, 'r.')
-    #     plt.show()
+        images = [Image.open(f"algorithms/temp_pics_iteration/{n}.png") for n in range(self.MAX_ITERATION)]
+        images[0].save('PSO_animation.gif', save_all=True, append_images=images[1:], duration=100, loop=0)
+
+        return position_history, best_swarm_position[0], best_swarm_position[1], best_swarm_fitness
