@@ -62,24 +62,34 @@ class PSO_interface(QMainWindow): # главное окно
         layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
         
-        # создаем кнопки для анимации и конечного положения графика
+        # создаем кнопки для анимации и конечного положения графика на одной горизонтальной линии
         self.btn_animate = QPushButton("Анимация", self)
         # self.btn_animate.clicked.connect(self.animate)
         self.btn_final = QPushButton("Конечное положение", self)
         # self.btn_final.clicked.connect(self.final)
-        layout.addWidget(self.btn_animate)
-        layout.addWidget(self.btn_final)
+        
+        # создаем горизонтальный лэйаут для кнопок
+        self.spinbox = QSpinBox(self)
+        self.spinbox.setMinimum(1)
+        self.spinbox.setMaximum(10)
+        self.spinbox.setValue(5)
+        # self.spinbox.valueChanged.connect(self.plot)
 
-        # создаем скроллер для выбора параметра для графика
-        self.slider = QSlider(Qt.Horizontal, self)
-        self.slider.setMinimum(1)
-        self.slider.setMaximum(10)
-        self.slider.setValue(5)
-        # self.slider.valueChanged.connect(self.plot)
-        layout.addWidget(self.slider)
+        self.label = QLabel(self)
+        self.label.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.label.setText("Num of itearation")
+
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(self.btn_animate)
+        btn_layout.addWidget(self.btn_final)
+        btn_layout.addWidget(self.spinbox)
+        btn_layout.addWidget(self.label)
+
+        # добавляем лэйаут с кнопками в основной лэйаут
+        btn_layout.setAlignment(Qt.AlignCenter)
+        layout.addLayout(btn_layout)
 
         self.central_widget.setLayout(layout)
-
 
     def run(self):
         PSO = Common(self.X, self.Y, self.Z, self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.func, self.W,
