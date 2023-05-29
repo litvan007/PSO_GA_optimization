@@ -5,12 +5,12 @@ import random
 from PIL import Image
 
 class Particle():
-    def __init__(self, MIN_X, MAX_X, SPACE_DIMENSION, func, W, C1, C2):
+    def __init__(self, MIN_X, MAX_X, SPACE_DIMENSION, func, W, C1, C2, C3):
         self.MIN_X = MIN_X
         self.MAX_X = MAX_X
         self.SPACE_DIMENSION = SPACE_DIMENSION
         self.func = func
-        self.W, self.C1, self.C2 = W, C1, C2
+        self.W, self.C1, self.C2, self.C3 = W, C1, C2, C3
         # Случайным образом инициализируем положение частицы в пространстве
         self.position = [random.uniform(MIN_X, MAX_X) for i in range(self.SPACE_DIMENSION)]
         # Случайным образом инициализируем скорость частицы
@@ -23,13 +23,15 @@ class Particle():
         self.best_fitness = self.fitness
 
     # Метод для обновления скорости частицы
-    def update_velocity(self, best_position):
+    def update_velocity(self, best_position, best_n_position):
         for i in range(self.SPACE_DIMENSION):
             r1 = random.random()
             r2 = random.random()
+            r3 = random.random()
             cognitive_velocity = self.C1 * r1 * (self.best_position[i] - self.position[i])
             social_velocity = self.C2 * r2 * (best_position[i] - self.position[i])
-            self.velocity[i] = self.W * self.velocity[i] + cognitive_velocity + social_velocity
+            neighboor_velocity = self.C3 * r3 * (best_n_position[i] - self.position[i])
+            self.velocity[i] = self.W * self.velocity[i] + cognitive_velocity + social_velocity + neighboor_velocity
 
     # Метод для обновления положения частицы
     def update_position(self):
@@ -49,12 +51,13 @@ class Particle():
             self.best_position = self.position.copy()
 
 class Common():
-    def __init__(self, X, Y, Z, MIN_X, MAX_X, SPACE_DIMENSION, func, W, C1, C2, MAX_ITERATION, PARTICLE_COUNT):
+    def __init__(self, X, Y, Z, MIN_X, MAX_X, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT):
         self.MAX_ITERATION, self.PARTICLE_COUNT = MAX_ITERATION, PARTICLE_COUNT
-        self.swarm = [Particle(MIN_X, MAX_X, SPACE_DIMENSION, func, W, C1, C2) for i in range(PARTICLE_COUNT)]
+        self.swarm = [Particle(MIN_X, MAX_X, SPACE_DIMENSION, func, W, C1, C2, C3) for _ in range(PARTICLE_COUNT)]
         self.X = X
         self.Y = Y
         self.Z = Z
+        self.func = func
 
     def run(self):
         best_swarm_position = self.swarm[0].position.copy()
@@ -69,26 +72,22 @@ class Common():
         iteration = 0 # номер итерации алгоритма
         position_history = []
         while iteration < self.MAX_ITERATION:
-            # Обновляем скорость, положение и значение функции для каждой частицы в рое
-            fig = plt.figure(figsize=(10, 10))
-            ax = fig.add_subplot(111, projection='3d')
-            plt.title("PSO")
-            ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, color='b')
-            ax.set_xlabel('x label', color='r')
-            ax.set_ylabel('y label', color='g')
-            ax.set_zlabel('z label', color='b')
-            ax.set_xlim(-5, 5)
-            ax.set_ylim(-5, 5)
-            ax.set_zlim(0, 100)
-
             temp_history = []
-            for particle in self.swarm:
+            for j, particle in enumerate(self.swarm):
                 curr_particle_position = particle.position.copy()
                 temp_history.append(curr_particle_position)
-                func = particle.func
-                ax.plot(curr_particle_position[0], curr_particle_position[1], func(curr_particle_position), 'r.')
 
-                particle.update_velocity(best_swarm_position)
+                left = (j - 1) % self.PARTICLE_COUNT # индекс левого соседа
+                right = (j + 1) % self.PARTICLE_COUNT # индекс правого соседа
+
+                p_best_left = self.swarm[left].best_position
+                p_best_right = self.swarm[right].best_position
+                if self.func(self.swarm[left].best_position) < self.func(self.swarm[right].best_position):
+                    best_n_position = p_best_left # левый сосед лучше правого
+                else:
+                    best_n_position = p_best_right # правый сосед лучше левого
+
+                particle.update_velocity(best_swarm_position, best_n_position)
                 particle.update_position()
                 particle.update_fitness()
 
@@ -97,15 +96,10 @@ class Common():
                     best_swarm_fitness = particle.fitness
             
             position_history.append(temp_history)
-            plt.savefig(f"algorithms/temp_pics_iteration/{iteration}.png")
-            plt.close()
             iteration += 1 # увеличиваем номер итерации
 
         # Выводим результат оптимизации на экран
         print("Лучшее решение: ", best_swarm_position)
         print("Значение функции в лучшем решении: ", best_swarm_fitness)
-
-        images = [Image.open(f"algorithms/temp_pics_iteration/{n}.png") for n in range(self.MAX_ITERATION)]
-        images[0].save('PSO_animation.gif', save_all=True, append_images=images[1:], duration=100, loop=0)
 
         return position_history, best_swarm_position[0], best_swarm_position[1], best_swarm_fitness

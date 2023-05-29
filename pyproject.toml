@@ -10,6 +10,7 @@ python = "^3.11"
 matplotlib = "^3.7.1"
 numpy = "^1.24.3"
 pyqt5 = "^5.15.9"
+pyyaml = "^6.0"
 
 
 [tool.poetry.group.dev.dependencies]

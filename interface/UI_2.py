@@ -30,6 +30,7 @@ class PSO_interface(QMainWindow): # главное окно
         self.W = 0.729 # инерционный вес
         self.C1 = 1.49445 # коэффициент личного лучшего значения
         self.C2 = 1.49445 # коэффициент глобального лучшего значения
+        self.C3 = 0 # коэффицент лучшего соседского значения
 
         # Границы пространства поиска
         self.MIN_X = -5.12
@@ -80,7 +81,6 @@ class PSO_interface(QMainWindow): # главное окно
         self.spinbox.valueChanged.connect(self.main_plot)
 
         self.label = QLabel(self)
-        # self.label.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.label.setText(f"/ {self.MAX_ITERATION}")
 
         self.label_point = QLabel(self)
@@ -107,7 +107,7 @@ class PSO_interface(QMainWindow): # главное окно
 
     def run(self):
         PSO = Common(self.X, self.Y, self.Z, self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.func, self.W,
-                        self.C1, self.C2, self.MAX_ITERATION, self.PARTICLE_COUNT)
+                        self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
         self.position_history, self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness = PSO.run()
         self.label_point.setText(f"Лучшее решение: X = {self.best_swarm_x}, Y = {self.best_swarm_y}")
         self.label_fit.setText(f"Значение ф-ии: {self.best_swarm_fitness}")
@@ -139,5 +139,5 @@ class PSO_interface(QMainWindow): # главное окно
         ax.set_xlim(self.MIN_X, self.MAX_X)
         ax.set_ylim(self.MIN_X, self.MAX_X)
         ax.set_zlim(0, 100)
-        ax.plot(self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness, 'g.', marker='o', markersize=7,)
+        ax.plot(self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness, 'g.', marker='o', markersize=7)
         self.canvas.draw()
