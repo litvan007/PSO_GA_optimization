@@ -3,17 +3,13 @@ sys.path.append("../")
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QMovie
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.animation import Animation
 
 from algorithms.PSO import Common
 
-from PIL import Image
 import numpy as np
 
 class PSO_interface(QMainWindow): # главное окно
@@ -24,13 +20,20 @@ class PSO_interface(QMainWindow): # главное окно
         # Количество измерений пространства поиска
         self.SPACE_DIMENSION = 2
         # Максимальное количество итераций алгоритма
-        self.MAX_ITERATION = 5
+        self.MAX_ITERATION = 100
+        # Пороговое значение массы для отмерания
+        self.MIN_MASS = 0.01
+        # Минимальное и максимальное значение температур для отжига
+        self.MIN_T = 0.1
+        self.MAX_T = 100
+        # Задаем коэффициент охлаждения SA
+        self.ALPHA = 0.97
 
         # Параметры алгоритма
         self.W = 0.729 # инерционный вес
         self.C1 = 1.49445 # коэффициент личного лучшего значения
         self.C2 = 1.49445 # коэффициент глобального лучшего значения
-        self.C3 = 0 # коэффицент лучшего соседского значения
+        self.C3 = 0.5 # коэффицент лучшего соседского значения
 
         # Границы пространства поиска
         self.MIN_X = -5.12
@@ -88,13 +91,16 @@ class PSO_interface(QMainWindow): # главное окно
 
         self.label_fit = QLabel(self)
         self.label_fit.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        
+
+        self.label_p_count = QLabel(self)
+        self.label_p_count.setFrameStyle(QFrame.Panel | QFrame.Sunken)
 
         btn_layout = QHBoxLayout()
         # btn_layout.addWidget(self.btn_animate)
         btn_layout.addWidget(self.btn_final)
         btn_layout.addWidget(self.spinbox)
         btn_layout.addWidget(self.label)
+        btn_layout.addWidget(self.label_p_count)
         btn_layout.addWidget(self.label_point)
         btn_layout.addWidget(self.label_fit)
 
@@ -106,9 +112,9 @@ class PSO_interface(QMainWindow): # главное окно
         self.central_widget.setLayout(self.layout1)
 
     def run(self):
-        PSO = Common(self.X, self.Y, self.Z, self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.func, self.W,
+        PSO = Common(self.X, self.Y, self.Z, self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
                         self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
-        self.position_history, self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness = PSO.run()
+        self.particle_count_history, self.position_history, self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness = PSO.run()
         self.label_point.setText(f"Лучшее решение: X = {self.best_swarm_x}, Y = {self.best_swarm_y}")
         self.label_fit.setText(f"Значение ф-ии: {self.best_swarm_fitness}")
         self.main_plot()
@@ -117,22 +123,25 @@ class PSO_interface(QMainWindow): # главное окно
         self.figure.clear()
         ax = self.figure.add_subplot(111, projection='3d')
         plt.title("PSO")
-        ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, color='b', )
+        ax.plot_surface(self.X, self.Y, self.Z, alpha=0.5)
         ax.set_xlabel('x label', color='r')
         ax.set_ylabel('y label', color='g')
         ax.set_zlabel('z label', color='b')
         ax.set_xlim(self.MIN_X, self.MAX_X)
         ax.set_ylim(self.MIN_X, self.MAX_X)
         ax.set_zlim(0, 100)
-        for particle_position in self.position_history[self.spinbox.value()-1]:
-            ax.plot(particle_position[1], particle_position[1], self.func(particle_position), 'r.')
+
+        epoch = self.spinbox.value() - 1
+        self.label_p_count.setText(f"Живых частиц: {self.particle_count_history[epoch]}")
+        for particle_position in self.position_history[epoch]:
+            ax.plot(particle_position[0], particle_position[1], self.func(particle_position), 'r.')
         self.canvas.draw()
 
     def relevant_point_plot(self):
         self.figure.clear()
         ax = self.figure.add_subplot(111, projection='3d')
         plt.title("PSO")
-        ax.plot_surface(self.X, self.Y, self.Z, rstride=1, cstride=1, color='b', )
+        ax.plot_surface(self.X, self.Y, self.Z, alpha=0.5)
         ax.set_xlabel('x label', color='r')
         ax.set_ylabel('y label', color='g')
         ax.set_zlabel('z label', color='b')
