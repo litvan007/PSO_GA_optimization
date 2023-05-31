@@ -120,8 +120,6 @@ class PSO_interface(QMainWindow): # главное окно
             PSO = Common(self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
                             self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
             self.particle_count_history, self.position_history, self.best_solution, self.best_value = PSO.run()
-            self.label_point.setText(f"Лучшее решение: X = {self.best_swarm_x}, Y = {self.best_swarm_y}")
-            self.label_fit.setText(f"Значение ф-ии: {self.best_swarm_fitness}")
 
         elif self.method == 'GA':
             GA = Common(self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.PARTICLE_COUNT, self.MAX_GEN, self.func, self.p_c, self.p_m)
