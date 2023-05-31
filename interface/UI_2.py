@@ -147,7 +147,7 @@ class PSO_interface(QMainWindow): # главное окно
     def main_plot(self):
         self.figure.clear()
         ax = self.figure.add_subplot(111, projection='3d')
-        plt.title("PSO")
+        plt.title("PSO" if self.METHOD == 0 else 'GENETIC')
         ax.plot_surface(self.X, self.Y, self.Z, alpha=0.5)
         ax.set_xlabel('x label', color='r')
         ax.set_ylabel('y label', color='g')

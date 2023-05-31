@@ -283,9 +283,9 @@ class Initial_interface(QMainWindow):
 
 
         #images
-        pic1_label = QLabel()
-        pic1 = QPixmap("images/matmodeling_pic3.jpg")
-        pic1_label.setPixmap(pic1)
+        # pic1_label = QLabel()
+        # pic1 = QPixmap("images/matmodeling_pic3.jpg")
+        # pic1_label.setPixmap(pic1)
 
         # pic2_label = QLabel()
         # pic2 = QPixmap("images/matmodeling_pic2.jpg")
@@ -293,7 +293,7 @@ class Initial_interface(QMainWindow):
 
         central_layout = QGridLayout()
         central_layout.addWidget(main_widget, 0,0)
-        central_layout.addWidget(pic1_label, 0,1)
+        # central_layout.addWidget(pic1_label, 0,1)
         # central_layout.addWidget(pic2_label, 1,1)
 
 
@@ -377,17 +377,18 @@ class Initial_interface(QMainWindow):
 
         USE_NEIGHBOURS = self.use_neighbours_checkbox.isChecked()
         C3 = self.c3_input.text()
+        if not USE_NEIGHBOURS:
+            C3 = 0
 
         USE_INERTION = self.use_inertion_checkbox.isChecked()
         W = self.W_input.text()
+        if not USE_INERTION:
+            W = 0
 
         USE_ANNEALING = self.use_annealing_checkbox.isChecked()
         MIN_T = self.MIN_T_input.text()
         MAX_T = self.MAX_T_input.text()
         ALPHA = self.alpha_input.text()
-
-        USE_INERTION = self.use_inertion_checkbox.isChecked()
-        W = self.W_input.text()
 
         USE_EXTINCTION = self.use_extinction_checkbox.isChecked()
         MIN_MASS = self.MIN_MASS_input.text()
