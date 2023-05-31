@@ -2,14 +2,14 @@ import numpy as np
 import random
 
 class Particle():
-    def __init__(self, MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3):
+    def __init__(self, GRAPH_MIN_X, GRAPH_MAX_X,  MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3):
         self.MIN_X = MIN_X
         self.MAX_X = MAX_X
         self.SPACE_DIMENSION = SPACE_DIMENSION
         self.func = func
         self.W, self.C1, self.C2, self.C3 = W, C1, C2, C3
         self.MIN_MASS = MIN_MASS
-        self.position = [random.uniform(MIN_X, MAX_X) for _ in range(self.SPACE_DIMENSION)]
+        self.position = [random.uniform(GRAPH_MIN_X, GRAPH_MAX_X) for _ in range(self.SPACE_DIMENSION)]
         self.velocity = [random.uniform(-1, 1) for _ in range(self.SPACE_DIMENSION)]
         self.fitness = self.func(self.position)
         self.best_position = self.position.copy()
@@ -62,9 +62,9 @@ class Particle():
                 self.position = temp_position
 
 class Common():
-    def __init__(self, MIN_X, MAX_X, MIN_MASS, MIN_T, MAX_T, ALPHA, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT):
+    def __init__(self, GRAPH_MIN_X, GRAPH_MAX_X, MIN_X, MAX_X, MIN_MASS, MIN_T, MAX_T, ALPHA, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT):
         self.MAX_ITERATION, self.PARTICLE_COUNT = MAX_ITERATION, PARTICLE_COUNT
-        self.swarm = [Particle(MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3) for _ in range(PARTICLE_COUNT)]
+        self.swarm = [Particle(GRAPH_MIN_X, GRAPH_MAX_X, MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3) for _ in range(PARTICLE_COUNT)]
         self.func = func
         self.MIN_T, self.MAX_T, self.ALPHA = MIN_T, MAX_T, ALPHA
 

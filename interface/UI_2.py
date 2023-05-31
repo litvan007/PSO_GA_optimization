@@ -132,12 +132,12 @@ class PSO_interface(QMainWindow): # главное окно
 
     def run(self):
         if self.METHOD == 0: # PSO
-            PSO_alg = PSO.Common(self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
+            PSO_alg = PSO.Common(self.GRAPH_MIN_X, self.GRAPH_MAX_X, self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
                             self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
             self.particle_count_history, self.position_history, self.best_solution, self.best_value = PSO_alg.run()
 
         elif self.METHOD == 1: # GENETIC
-            GA_alg = GA.Common(self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.PARTICLE_COUNT, self.MAX_GEN, self.func, self.p_c, self.p_m)
+            GA_alg = GA.Common(self.GRAPH_MIN_X, self.GRAPH_MAX_X, self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.PARTICLE_COUNT, self.MAX_GEN, self.func, self.p_c, self.p_m)
             self.count_best_history, self.position_history, self.best_solution, self.best_value = GA_alg.run()
 
         self.label_point.setText(f"Лучшее решение: X = {self.best_solution[0]}, Y = {self.best_solution[1]}")

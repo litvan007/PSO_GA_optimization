@@ -2,13 +2,13 @@ import numpy as np
 import random
 
 class Common():
-    def __init__(self, MIN_X, MAX_X, SPACE_DIMENSION, POPULATION_COUNT, MAX_GEN, func, p_c, p_m) -> None:
+    def __init__(self, GRAPH_MIN_X, GRAPH_MAX_X, MIN_X, MAX_X, SPACE_DIMENSION, POPULATION_COUNT, MAX_GEN, func, p_c, p_m) -> None:
         self.p_c, self.p_m = p_c, p_m
         self.func = func
         self.SPACE_DIMENSION = SPACE_DIMENSION
         self.MAX_GEN = MAX_GEN
         self.POPULATION_COUNT = POPULATION_COUNT
-        self.population = np.array([[random.uniform(MIN_X, MAX_X) for _ in range(self.SPACE_DIMENSION)] for _ in range(self.POPULATION_COUNT)])
+        self.population = np.array([[random.uniform(GRAPH_MIN_X, GRAPH_MAX_X) for _ in range(self.SPACE_DIMENSION)] for _ in range(self.POPULATION_COUNT)])
         self.fit = np.array([func(self.population[i]) for i in range(self.POPULATION_COUNT)]) # приспособленности
 
     def run(self):
