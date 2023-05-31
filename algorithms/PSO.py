@@ -9,15 +9,10 @@ class Particle():
         self.func = func
         self.W, self.C1, self.C2, self.C3 = W, C1, C2, C3
         self.MIN_MASS = MIN_MASS
-        # Случайным образом инициализируем положение частицы в пространстве
         self.position = [random.uniform(MIN_X, MAX_X) for _ in range(self.SPACE_DIMENSION)]
-        # Случайным образом инициализируем скорость частицы
         self.velocity = [random.uniform(-1, 1) for _ in range(self.SPACE_DIMENSION)]
-        # Вычисляем значение функции в текущем положении частицы
         self.fitness = self.func(self.position)
-        # Инициализируем лучшее положение частицы текущим положением
         self.best_position = self.position.copy()
-        # Инициализируем лучшее значение функции текущим значением функции
         self.best_fitness = self.fitness
 
     # Метод для обновления скорости частицы
@@ -37,7 +32,6 @@ class Particle():
     def update_position(self):
         for i in range(self.SPACE_DIMENSION):
             self.position[i] += self.velocity[i]
-            # Если частица вышла за границы пространства поиска, то ограничиваем ее положение
             if self.position[i] < self.MIN_X:
                 self.position[i] = self.MIN_X
             elif self.position[i] > self.MAX_X:
@@ -59,10 +53,9 @@ class Particle():
         temp_position = self.position + delta
         delta_fitness = self.func(temp_position) - self.fitness
 
-        # Если новое решение лучше или равно текущему, то принимаем его
         if delta_fitness <= 0:
             self.position = temp_position
-        # Иначе принимаем его с вероятностью exp(-delta_f / T)
+        # Вероятность exp(-delta_f / T)
         else:
             p = np.exp(-delta_fitness / T)
             if np.random.uniform() < p:
@@ -87,7 +80,7 @@ class Common():
                 best_swarm_fitness = particle.fitness
 
         # Основной цикл алгоритма оптимизации
-        iteration = 0 # номер итерации алгоритма
+        iteration = 0 
         position_history = []
         particle_count_history = [self.PARTICLE_COUNT]
         while iteration < self.MAX_ITERATION:
@@ -98,15 +91,15 @@ class Common():
                 curr_particle_position = particle.position.copy()
                 temp_history.append(curr_particle_position)
 
-                left = (j - 1) % self.PARTICLE_COUNT # индекс левого соседа
-                right = (j + 1) % self.PARTICLE_COUNT # индекс правого соседа
+                left = (j - 1) % self.PARTICLE_COUNT 
+                right = (j + 1) % self.PARTICLE_COUNT 
 
                 p_best_left = self.swarm[left].best_position
                 p_best_right = self.swarm[right].best_position
                 if self.func(self.swarm[left].best_position) < self.func(self.swarm[right].best_position):
-                    best_n_position = p_best_left # левый сосед лучше правого
+                    best_n_position = p_best_left 
                 else:
-                    best_n_position = p_best_right # правый сосед лучше левого
+                    best_n_position = p_best_right 
 
                 particle.update_velocity(best_swarm_position, best_n_position)
                 particle.update_position()
@@ -136,9 +129,8 @@ class Common():
             T = T * self.ALPHA
             if T < self.MIN_T:
                 T = self.MIN_T
-            iteration += 1 # увеличиваем номер итерации
+            iteration += 1 
 
-        # Выводим результат оптимизации на экран
         print("Лучшее решение: ", best_swarm_position)
         print("Значение функции в лучшем решении: ", best_swarm_fitness)
 
