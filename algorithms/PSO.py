@@ -62,11 +62,12 @@ class Particle():
                 self.position = temp_position
 
 class Common():
-    def __init__(self, GRAPH_MIN_X, GRAPH_MAX_X, MIN_X, MAX_X, MIN_MASS, MIN_T, MAX_T, ALPHA, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT):
+    def __init__(self, GRAPH_MIN_X, GRAPH_MAX_X, MIN_X, MAX_X, MIN_MASS, MIN_T, MAX_T, ALPHA, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT, USE_EXTINCTION, USE_ANNEALING):
         self.MAX_ITERATION, self.PARTICLE_COUNT = MAX_ITERATION, PARTICLE_COUNT
         self.swarm = [Particle(GRAPH_MIN_X, GRAPH_MAX_X, MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3) for _ in range(PARTICLE_COUNT)]
         self.func = func
         self.MIN_T, self.MAX_T, self.ALPHA = MIN_T, MAX_T, ALPHA
+        self.USE_EXTINCTION, self.USE_ANNEALING = USE_EXTINCTION, USE_ANNEALING
 
     def run(self):
         best_swarm_position = self.swarm[0].position.copy()
@@ -113,22 +114,23 @@ class Common():
                     bad_swarm_fitness = particle.fitness
 
                 # Эффект отжига
-                particle.simulated_annealing(T)    
+                if self.USE_ANNEALING:
+                    particle.simulated_annealing(T)    
+                    temp = T * self.ALPHA
+                    T = self.MIN_T if temp < self.MIN_T else temp
 
                 # Проверка на выживаемость
-                isAlive = particle.update_mass(best_swarm_fitness, bad_swarm_fitness)
-                if not isAlive:
-                    print(f'{j}s particle is dead')
-                    del self.swarm[j]
-                    self.PARTICLE_COUNT -= 1
+                if self.USE_EXTINCTION:
+                    isAlive = particle.update_mass(best_swarm_fitness, bad_swarm_fitness)
+                    if not isAlive:
+                        print(f'{j}s particle is dead')
+                        del self.swarm[j]
+                        self.PARTICLE_COUNT -= 1
 
             particle_count_history.append(self.PARTICLE_COUNT)
             position_history.append(temp_history)
 
             # Обновление значения температуры
-            T = T * self.ALPHA
-            if T < self.MIN_T:
-                T = self.MIN_T
             iteration += 1 
 
         print("Лучшее решение: ", best_swarm_position)

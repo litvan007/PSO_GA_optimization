@@ -68,9 +68,6 @@ class PSO_interface(QMainWindow): # главное окно
         self.p_c = float(config['p_c'])
         self.p_m = float(config['p_m'])
 
-
-        self.USE_NEIGHBOURS = config['USE_NEIGHBOURS']
-        self.USE_INERTION = config['USE_INERTION']
         self.USE_ANNEALING = config['USE_ANNEALING']
         self.USE_EXTINCTION = config['USE_EXTINCTION']
 
@@ -133,7 +130,7 @@ class PSO_interface(QMainWindow): # главное окно
     def run(self):
         if self.METHOD == 0: # PSO
             PSO_alg = PSO.Common(self.GRAPH_MIN_X, self.GRAPH_MAX_X, self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
-                            self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
+                            self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT, self.USE_EXTINCTION, self.USE_ANNEALING)
             self.particle_count_history, self.position_history, self.best_solution, self.best_value = PSO_alg.run()
 
         elif self.METHOD == 1: # GENETIC
