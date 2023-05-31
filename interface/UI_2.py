@@ -13,12 +13,12 @@ from algorithms.PSO import Common
 import numpy as np
 import yaml
 
+# Добавить флаги для модификации PSO TODO
 class PSO_interface(QMainWindow): # главное окно
     def __init__(self, parent=None):
         super().__init__(parent)
         with open('configs/config.yaml') as file:
             config = yaml.load(file, Loader=yaml.FullLoader)
-
 
         # Количество частиц в рое
         self.PARTICLE_COUNT = int(config['PARTICLE_COUNT'])
@@ -48,15 +48,9 @@ class PSO_interface(QMainWindow): # главное окно
         self.X, self.Y = np.meshgrid(self.X, self.Y)
 
         self.FUNCTION = config['FUNCTION']
-
-        # def func(x): # TODO
-        #     sum = 0
-        #     for i in range(2):
-        #         sum += x[i]**2 - 10 * np.cos(2 * np.pi * x[i])
-        #     return 10 * 2 + sum
+        self.method = ... # TODO
 
         def func(x):
-            # return sin(x[0]) + sin(x[1])
             return eval(self.FUNCTION, {'x': x, 
                                         'sin': np.sin,
                                         'cos': np.cos,
@@ -84,9 +78,6 @@ class PSO_interface(QMainWindow): # главное окно
         self.layout1.addWidget(self.toolbar1)
         self.layout1.addWidget(self.canvas)
 
-        # # создаем кнопки для анимации и конечного положения графика на одной горизонтальной линии
-        # self.btn_animate = QPushButton("Анимация", self)
-        # self.btn_animate.clicked.connect(self.show_animation)
         self.btn_final = QPushButton("Минимум", self)
         self.btn_final.clicked.connect(self.relevant_point_plot)
         
@@ -110,7 +101,6 @@ class PSO_interface(QMainWindow): # главное окно
         self.label_p_count.setFrameStyle(QFrame.Panel | QFrame.Sunken)
 
         btn_layout = QHBoxLayout()
-        # btn_layout.addWidget(self.btn_animate)
         btn_layout.addWidget(self.btn_final)
         btn_layout.addWidget(self.spinbox)
         btn_layout.addWidget(self.label)
@@ -126,11 +116,19 @@ class PSO_interface(QMainWindow): # главное окно
         self.central_widget.setLayout(self.layout1)
 
     def run(self):
-        PSO = Common(self.X, self.Y, self.Z, self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
-                        self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
-        self.particle_count_history, self.position_history, self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness = PSO.run()
-        self.label_point.setText(f"Лучшее решение: X = {self.best_swarm_x}, Y = {self.best_swarm_y}")
-        self.label_fit.setText(f"Значение ф-ии: {self.best_swarm_fitness}")
+        if self.method == 'PSO':
+            PSO = Common(self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
+                            self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
+            self.particle_count_history, self.position_history, self.best_solution, self.best_value = PSO.run()
+            self.label_point.setText(f"Лучшее решение: X = {self.best_swarm_x}, Y = {self.best_swarm_y}")
+            self.label_fit.setText(f"Значение ф-ии: {self.best_swarm_fitness}")
+
+        elif self.method == 'GA':
+            GA = Common(self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.PARTICLE_COUNT, self.MAX_GEN, self.func, self.p_c, self.p_m)
+            self.count_best_history, self.position_history, self.best_solution, self.best_value = GA.run()
+
+        self.label_point.setText(f"Лучшее решение: X = {self.best_solution[0]}, Y = {self.best_solution[1]}")
+        self.label_fit.setText(f"Значение ф-ии: {self.best_value}")
         self.main_plot()
 
     def main_plot(self):
@@ -146,10 +144,17 @@ class PSO_interface(QMainWindow): # главное окно
         ax.set_zlim(0, 100)
 
         epoch = self.spinbox.value() - 1
-        self.label_p_count.setText(f"Живых частиц: {self.particle_count_history[epoch]}")
-        for particle_position in self.position_history[epoch]:
-            ax.plot(particle_position[0], particle_position[1], self.func(particle_position), 'r.')
-        self.canvas.draw()
+        if self.method == 'PSO':
+            self.label_p_count.setText(f"Живых частиц: {self.particle_count_history[epoch]}")
+            for particle_position in self.position_history[epoch]:
+                ax.plot(particle_position[0], particle_position[1], self.func(particle_position), 'r.')
+            self.canvas.draw()
+        
+        if self.method == 'GA':
+            for particle_position in self.position_history[epoch]:
+                self.label_p_count.setText(f"Лучших частиц: {self.count_best_history[epoch]}")
+                ax.plot(particle_position[0], particle_position[1], self.func(particle_position), 'r.')
+            self.canvas.draw()
 
     def relevant_point_plot(self):
         self.figure.clear()
@@ -162,5 +167,5 @@ class PSO_interface(QMainWindow): # главное окно
         ax.set_xlim(self.MIN_X, self.MAX_X)
         ax.set_ylim(self.MIN_X, self.MAX_X)
         ax.set_zlim(0, 100)
-        ax.plot(self.best_swarm_x, self.best_swarm_y, self.best_swarm_fitness, 'g.', marker='o', markersize=7)
+        ax.plot(self.best_solution[0], self.best_solution[1], self.best_value, 'g.', marker='o', markersize=7)
         self.canvas.draw()

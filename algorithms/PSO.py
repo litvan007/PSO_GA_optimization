@@ -1,8 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import animation
 import random
-from PIL import Image
 
 class Particle():
     def __init__(self, MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3):
@@ -72,12 +69,9 @@ class Particle():
                 self.position = temp_position
 
 class Common():
-    def __init__(self, X, Y, Z, MIN_X, MAX_X, MIN_MASS, MIN_T, MAX_T, ALPHA, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT):
+    def __init__(self, MIN_X, MAX_X, MIN_MASS, MIN_T, MAX_T, ALPHA, SPACE_DIMENSION, func, W, C1, C2, C3, MAX_ITERATION, PARTICLE_COUNT):
         self.MAX_ITERATION, self.PARTICLE_COUNT = MAX_ITERATION, PARTICLE_COUNT
         self.swarm = [Particle(MIN_X, MAX_X, MIN_MASS, SPACE_DIMENSION, func, W, C1, C2, C3) for _ in range(PARTICLE_COUNT)]
-        self.X = X
-        self.Y = Y
-        self.Z = Z
         self.func = func
         self.MIN_T, self.MAX_T, self.ALPHA = MIN_T, MAX_T, ALPHA
 
@@ -148,4 +142,4 @@ class Common():
         print("Лучшее решение: ", best_swarm_position)
         print("Значение функции в лучшем решении: ", best_swarm_fitness)
 
-        return particle_count_history, position_history, best_swarm_position[0], best_swarm_position[1], best_swarm_fitness
+        return particle_count_history, position_history, best_swarm_position, best_swarm_fitness
