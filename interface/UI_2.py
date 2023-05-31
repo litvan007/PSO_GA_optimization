@@ -11,42 +11,56 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from algorithms.PSO import Common
 
 import numpy as np
+import yaml
 
 class PSO_interface(QMainWindow): # главное окно
     def __init__(self, parent=None):
         super().__init__(parent)
+        with open('configs/config.yaml') as file:
+            config = yaml.load(file, Loader=yaml.FullLoader)
+
+
         # Количество частиц в рое
-        self.PARTICLE_COUNT = 50
+        self.PARTICLE_COUNT = int(config['PARTICLE_COUNT'])
         # Количество измерений пространства поиска
         self.SPACE_DIMENSION = 2
         # Максимальное количество итераций алгоритма
-        self.MAX_ITERATION = 100
+        self.MAX_ITERATION = int(config['MAX_ITERATION'])
         # Пороговое значение массы для отмерания
-        self.MIN_MASS = 0.01
+        self.MIN_MASS = float(config['MIN_MASS'])
         # Минимальное и максимальное значение температур для отжига
-        self.MIN_T = 0.1
-        self.MAX_T = 100
+        self.MIN_T = float(config['MIN_T'])
+        self.MAX_T = float(config['MAX_T'])
         # Задаем коэффициент охлаждения SA
-        self.ALPHA = 0.97
+        self.ALPHA = float(config['ALPHA'])
 
         # Параметры алгоритма
-        self.W = 0.729 # инерционный вес
+        self.W = float(config['W']) # инерционный вес
         self.C1 = 1.49445 # коэффициент личного лучшего значения
         self.C2 = 1.49445 # коэффициент глобального лучшего значения
-        self.C3 = 0.5 # коэффицент лучшего соседского значения
+        self.C3 = float(config['C3']) # коэффицент лучшего соседского значения
 
         # Границы пространства поиска
-        self.MIN_X = -5.12
-        self.MAX_X = 5.12
-        self.X = np.arange(-2, 2, 0.05)
-        self.Y = np.arange(-2, 2, 0.05)
+        self.MIN_X = float(config['MIN_X'])
+        self.MAX_X = float(config['MAX_X'])
+        self.X = np.arange(self.MIN_X, self.MAX_X, 0.05)
+        self.Y = np.arange(self.MIN_X, self.MAX_X, 0.05)
         self.X, self.Y = np.meshgrid(self.X, self.Y)
 
-        def func(x): # TODO
-            sum = 0
-            for i in range(2):
-                sum += x[i]**2 - 10 * np.cos(2 * np.pi * x[i])
-            return 10 * 2 + sum
+        self.FUNCTION = config['FUNCTION']
+
+        # def func(x): # TODO
+        #     sum = 0
+        #     for i in range(2):
+        #         sum += x[i]**2 - 10 * np.cos(2 * np.pi * x[i])
+        #     return 10 * 2 + sum
+
+        def func(x):
+            # return sin(x[0]) + sin(x[1])
+            return eval(self.FUNCTION, {'x': x, 
+                                        'sin': np.sin,
+                                        'cos': np.cos,
+                                        'pi': np.pi})
 
         self.func = func
         self.Z = self.func([self.X, self.Y])
