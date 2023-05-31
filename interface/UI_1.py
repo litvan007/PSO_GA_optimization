@@ -283,9 +283,9 @@ class Initial_interface(QMainWindow):
 
 
         #images
-        # pic1_label = QLabel()
-        # pic1 = QPixmap("images/matmodeling_pic3.jpg")
-        # pic1_label.setPixmap(pic1)
+        pic1_label = QLabel()
+        pic1 = QPixmap("images/matmodeling_pic3.jpg")
+        pic1_label.setPixmap(pic1)
 
         # pic2_label = QLabel()
         # pic2 = QPixmap("images/matmodeling_pic2.jpg")
@@ -293,7 +293,7 @@ class Initial_interface(QMainWindow):
 
         central_layout = QGridLayout()
         central_layout.addWidget(main_widget, 0,0)
-        # central_layout.addWidget(pic1_label, 0,1)
+        central_layout.addWidget(pic1_label, 0,1)
         # central_layout.addWidget(pic2_label, 1,1)
 
 

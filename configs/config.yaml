@@ -1,6 +1,6 @@
 ALPHA: '0.97'
-C3: 0
-FUNCTION: (x[0]**2 - cos(2*pi*x[0])) + (x[1]**2 - cos(2*pi*x[1]))
+C3: '0.5'
+FUNCTION: 20 + (x[0]**2 - 10*cos(2*pi*x[0])) + (x[1]**2 - 10*cos(2*pi*x[1]))
 GRAPH_MAX_X: '10'
 GRAPH_MIN_X: '-10'
 MAX_GEN: '100'
@@ -15,7 +15,7 @@ PARTICLE_COUNT: '50'
 USE_ANNEALING: false
 USE_EXTINCTION: false
 USE_INERTION: false
-USE_NEIGHBOURS: false
+USE_NEIGHBOURS: true
 W: 0
 p_c: '0.8'
 p_m: '0.1'
