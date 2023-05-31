@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from algorithms.PSO import Common
+from algorithms import GA
+from algorithms import PSO
 
 import numpy as np
 import yaml
@@ -43,12 +44,16 @@ class PSO_interface(QMainWindow): # главное окно
         # Границы пространства поиска
         self.MIN_X = float(config['MIN_X'])
         self.MAX_X = float(config['MAX_X'])
-        self.X = np.arange(self.MIN_X, self.MAX_X, 0.05)
-        self.Y = np.arange(self.MIN_X, self.MAX_X, 0.05)
+
+        self.GRAPH_MIN_X = float(config['GRAPH_MIN_X'])
+        self.GRAPH_MAX_X = float(config['GRAPH_MAX_X'])
+
+        self.X = np.arange(self.GRAPH_MIN_X, self.GRAPH_MAX_X, 0.05)
+        self.Y = np.arange(self.GRAPH_MIN_X, self.GRAPH_MAX_X, 0.05)
         self.X, self.Y = np.meshgrid(self.X, self.Y)
 
         self.FUNCTION = config['FUNCTION']
-        self.method = ... # TODO
+        self.METHOD = int(config['METHOD']) 
 
         def func(x):
             return eval(self.FUNCTION, {'x': x, 
@@ -58,6 +63,16 @@ class PSO_interface(QMainWindow): # главное окно
 
         self.func = func
         self.Z = self.func([self.X, self.Y])
+
+        self.MAX_GEN = int(config['MAX_GEN']) 
+        self.p_c = float(config['p_c'])
+        self.p_m = float(config['p_m'])
+
+
+        self.USE_NEIGHBOURS = config['USE_NEIGHBOURS']
+        self.USE_INERTION = config['USE_INERTION']
+        self.USE_ANNEALING = config['USE_ANNEALING']
+        self.USE_EXTINCTION = config['USE_EXTINCTION']
 
         self.setupUi()
 
@@ -116,14 +131,14 @@ class PSO_interface(QMainWindow): # главное окно
         self.central_widget.setLayout(self.layout1)
 
     def run(self):
-        if self.method == 'PSO':
-            PSO = Common(self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
+        if self.METHOD == 0: # PSO
+            PSO_alg = PSO.Common(self.MIN_X, self.MAX_X, self.MIN_T, self.MAX_T, self.ALPHA, self.MIN_MASS, self.SPACE_DIMENSION, self.func, self.W,
                             self.C1, self.C2, self.C3, self.MAX_ITERATION, self.PARTICLE_COUNT)
-            self.particle_count_history, self.position_history, self.best_solution, self.best_value = PSO.run()
+            self.particle_count_history, self.position_history, self.best_solution, self.best_value = PSO_alg.run()
 
-        elif self.method == 'GA':
-            GA = Common(self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.PARTICLE_COUNT, self.MAX_GEN, self.func, self.p_c, self.p_m)
-            self.count_best_history, self.position_history, self.best_solution, self.best_value = GA.run()
+        elif self.METHOD == 1: # GENETIC
+            GA_alg = GA.Common(self.MIN_X, self.MAX_X, self.SPACE_DIMENSION, self.PARTICLE_COUNT, self.MAX_GEN, self.func, self.p_c, self.p_m)
+            self.count_best_history, self.position_history, self.best_solution, self.best_value = GA_alg.run()
 
         self.label_point.setText(f"Лучшее решение: X = {self.best_solution[0]}, Y = {self.best_solution[1]}")
         self.label_fit.setText(f"Значение ф-ии: {self.best_value}")
@@ -137,18 +152,18 @@ class PSO_interface(QMainWindow): # главное окно
         ax.set_xlabel('x label', color='r')
         ax.set_ylabel('y label', color='g')
         ax.set_zlabel('z label', color='b')
-        ax.set_xlim(self.MIN_X, self.MAX_X)
-        ax.set_ylim(self.MIN_X, self.MAX_X)
+        ax.set_xlim(self.GRAPH_MIN_X, self.GRAPH_MAX_X)
+        ax.set_ylim(self.GRAPH_MIN_X, self.GRAPH_MAX_X)
         ax.set_zlim(0, 100)
 
         epoch = self.spinbox.value() - 1
-        if self.method == 'PSO':
+        if self.METHOD == 0: # PSO
             self.label_p_count.setText(f"Живых частиц: {self.particle_count_history[epoch]}")
             for particle_position in self.position_history[epoch]:
                 ax.plot(particle_position[0], particle_position[1], self.func(particle_position), 'r.')
             self.canvas.draw()
         
-        if self.method == 'GA':
+        if self.METHOD == 1: # GENETIC
             for particle_position in self.position_history[epoch]:
                 self.label_p_count.setText(f"Лучших частиц: {self.count_best_history[epoch]}")
                 ax.plot(particle_position[0], particle_position[1], self.func(particle_position), 'r.')

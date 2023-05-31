@@ -81,6 +81,23 @@ class Initial_interface(QMainWindow):
         self.boundary2_input = QLineEdit()
         self.boundary2_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.boundary2_input.setText('5.12')
+
+        self.boundary3_label = QLabel("Graph Boundaries:")
+        self.boundary3_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self.boundary3_label = QLabel("GRAPH_MIN_X:")
+        self.boundary3_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self.boundary3_input = QLineEdit()
+        self.boundary3_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.boundary3_input.setText('-10')
+
+        self.boundary4_label = QLabel("GRAPH_MAX_X:")
+        self.boundary4_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self.boundary4_input = QLineEdit()
+        self.boundary4_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.boundary4_input.setText('10')
         
 
         # Common parameters layout
@@ -92,6 +109,9 @@ class Initial_interface(QMainWindow):
         self.common_layout.addRow(self.boundary_label)
         self.common_layout.addRow(self.boundary1_label, self.boundary1_input)
         self.common_layout.addRow(self.boundary2_label, self.boundary2_input)
+        self.common_layout.addRow(self.boundary3_label)
+        self.common_layout.addRow(self.boundary3_label, self.boundary3_input)
+        self.common_layout.addRow(self.boundary4_label, self.boundary4_input)
 
 
         # Dropdown menu
@@ -221,16 +241,29 @@ class Initial_interface(QMainWindow):
         self.gen_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.gen_input.setText('100')
 
+        self.p_c_label = QLabel("Probability of crossover:")
+        self.p_c_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self.p_c_input = QLineEdit()
+        self.p_c_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.p_c_input.setText('0.8')
+
+        self.p_m_label = QLabel("Probability of mutation:")
+        self.p_m_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        self.p_m_input = QLineEdit()
+        self.p_m_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.p_m_input.setText('0.1')
+
         self.genetic_parameters = QWidget()
         self.gen_layout = QFormLayout(self.genetic_parameters)
         self.gen_layout.addRow(self.gen_label, self.gen_input)
+        self.gen_layout.addRow(self.p_c_label, self.p_c_input)
+        self.gen_layout.addRow(self.p_m_label, self.p_m_input)
         self.genetic_parameters.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.genetic_parameters.hide()
 
-        # Other buttons
-        self.apply_button = QPushButton("Apply")
-        self.apply_button.clicked.connect(self.writeConfigFile)
-        self.apply_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
 
         self.optimize_button = QPushButton("Optimize")
         self.optimize_button.clicked.connect(self.on_optimize_button_clicked)
@@ -241,7 +274,6 @@ class Initial_interface(QMainWindow):
         layout.addWidget(self.dropdown_menu)
         layout.addWidget(self.pso_parameters)
         layout.addWidget(self.genetic_parameters)
-        layout.addWidget(self.apply_button)
         layout.addWidget(self.optimize_button)
 
 
@@ -335,9 +367,13 @@ class Initial_interface(QMainWindow):
         # Get the inputs from the widgets
         FUNCTION = self.function_input.text()
         PARTICLE_COUNT = self.particle_input.text()
-        MAX_ITERATION = self.iter_input.text()
         MIN_X = self.boundary1_input.text()
         MAX_X = self.boundary2_input.text()
+
+        GRAPH_MIN_X = self.boundary3_input.text()
+        GRAPH_MAX_X = self.boundary4_input.text()
+
+        MAX_ITERATION = self.iter_input.text()
 
         USE_NEIGHBOURS = self.use_neighbours_checkbox.isChecked()
         C3 = self.c3_input.text()
@@ -356,6 +392,12 @@ class Initial_interface(QMainWindow):
         USE_EXTINCTION = self.use_extinction_checkbox.isChecked()
         MIN_MASS = self.MIN_MASS_input.text()
 
+        MAX_GEN = self.gen_input.text()
+        p_c = self.p_c_input.text()
+        p_m = self.p_m_input.text()
+
+        METHOD = self.dropdown_menu.currentIndex()
+
         # Write the inputs into a YAML file
         config = {
             'FUNCTION': FUNCTION,
@@ -372,8 +414,13 @@ class Initial_interface(QMainWindow):
             'MAX_T': MAX_T,
             'ALPHA': ALPHA,
             'USE_EXTINCTION': USE_EXTINCTION,
-            'MIN_MASS': MIN_MASS
-
+            'MIN_MASS': MIN_MASS,
+            'MAX_GEN': MAX_GEN,
+            'p_c': p_c,
+            'p_m': p_m,
+            'METHOD': METHOD,
+            'GRAPH_MIN_X': GRAPH_MIN_X,
+            'GRAPH_MAX_X': GRAPH_MAX_X
         }
 
         with open('configs/config.yaml', 'w') as file:
