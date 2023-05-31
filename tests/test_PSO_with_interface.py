@@ -13,14 +13,8 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # win = Initial_interface()
-    # win.run()
-    # win.show()
-
     ui1 = Initial_interface()
-
     ui1.open_ui2.connect(ui1.on_optimize_button_clicked)
-
     ui1.show()
 
     sys.exit(app.exec_())
