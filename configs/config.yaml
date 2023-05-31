@@ -1,16 +1,16 @@
 ALPHA: '0.97'
 C3: 0
-FUNCTION: 5*sin(x[0]) + 5*cos(x[1])
+FUNCTION: (x[0]**2 - cos(2*pi*x[0])) + (x[1]**2 - cos(2*pi*x[1]))
 GRAPH_MAX_X: '10'
 GRAPH_MIN_X: '-10'
 MAX_GEN: '100'
 MAX_ITERATION: '100'
 MAX_T: '100'
-MAX_X: '5.12'
+MAX_X: '10'
 METHOD: 0
 MIN_MASS: '0.01'
 MIN_T: '0.1'
-MIN_X: '-5.12'
+MIN_X: '-10'
 PARTICLE_COUNT: '50'
 USE_ANNEALING: false
 USE_EXTINCTION: false

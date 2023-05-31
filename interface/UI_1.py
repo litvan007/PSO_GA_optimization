@@ -53,7 +53,7 @@ class Initial_interface(QMainWindow):
         self.function_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.function_input = QLineEdit()
         self.function_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.function_input.setText('5*sin(x[0]) + 5*cos(x[1])')
+        self.function_input.setText('20 + (x[0]**2 - 10*cos(2*pi*x[0])) + (x[1]**2 - 10*cos(2*pi*x[1]))')
 
         # Number of particles
 
@@ -73,14 +73,14 @@ class Initial_interface(QMainWindow):
 
         self.boundary1_input = QLineEdit()
         self.boundary1_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.boundary1_input.setText('-5.12')
+        self.boundary1_input.setText('-10')
 
         self.boundary2_label = QLabel("MAX_X:")
         self.boundary2_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.boundary2_input = QLineEdit()
         self.boundary2_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.boundary2_input.setText('5.12')
+        self.boundary2_input.setText('10')
 
         self.boundary3_label = QLabel("Graph Boundaries:")
         self.boundary3_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)

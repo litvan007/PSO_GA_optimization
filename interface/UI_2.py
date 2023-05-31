@@ -74,7 +74,7 @@ class PSO_interface(QMainWindow): # главное окно
         self.setupUi()
 
     def setupUi(self):
-        self.setWindowTitle("PSO") # заголовок окна
+        self.setWindowTitle("Optimization") # заголовок окна
         self.move(300, 300) # положение окна
         self.resize(1200, 680) # размер окна
 
@@ -169,7 +169,7 @@ class PSO_interface(QMainWindow): # главное окно
     def relevant_point_plot(self):
         self.figure.clear()
         ax = self.figure.add_subplot(111, projection='3d')
-        plt.title("PSO")
+        plt.title("PSO" if self.METHOD == 0 else 'GENETIC')
         ax.plot_surface(self.X, self.Y, self.Z, alpha=0.5)
         ax.set_xlabel('x label', color='r')
         ax.set_ylabel('y label', color='g')
